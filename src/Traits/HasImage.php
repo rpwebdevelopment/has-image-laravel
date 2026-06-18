@@ -35,7 +35,6 @@ trait HasImage
     protected function storeImage(): void
     {
         $this->setImageDetails();
-        $filepath = $this->imageDetails->generateFullPath();
         $fields = $this->imageDetails?->imageFields ?? [];
 
         foreach ($fields as $imageField) {
@@ -44,6 +43,7 @@ trait HasImage
                 continue;
             }
 
+            $filepath = $this->imageDetails->generateFullPath($file);
             $fileContent = $this->sanitizeImage($file);
             Storage::disk($this->imageDetails->storageDisk)
                 ->put($filepath, $fileContent);
