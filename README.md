@@ -1,19 +1,15 @@
 # A package for simplifying image handling on Laravel eloquent models
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/rpwebdevelopment/has-image-laravel.svg?style=flat-square)](https://packagist.org/packages/rpwebdevelopment/has-image-laravel)
-[![GitHub Tests Action Status](https://github.com/spatie/package-has-image-laravel-laravel/actions/workflows/run-tests.yml/badge.svg)](https://github.com/rpwebdevelopment/has-image-laravel/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://github.com/spatie/package-has-image-laravel-laravel/actions/workflows/fix-php-code-style-issues.yml/badge.svg)](https://github.com/rpwebdevelopment/has-image-laravel/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/rpwebdevelopment/has-image-laravel.svg?style=flat-square)](https://packagist.org/packages/rpwebdevelopment/has-image-laravel)
+![Packagist Version](https://img.shields.io/packagist/v/rpwebdevelopment/has-image-laravel)
+![Packagist Downloads](https://img.shields.io/packagist/dt/rpwebdevelopment/has-image-laravel)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blueviolet.svg)](https://github.com/rpwebdevelopment/has-image-laravel/blob/main/LICENSE.md)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+The `has-image-laravel` package is designed to be a lightweight package to simplify image handling on Laravel
+models, currently rather than having to handle uploaded files in your controllers, usually leading to significant 
+code duplication.
 
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/has-image-laravel.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/has-image-laravel)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+This package allows for image upload handling (including SVG sanitization) on models to be quickly and easily
+configured.
 
 ## Installation
 
@@ -23,61 +19,69 @@ You can install the package via composer:
 composer require rpwebdevelopment/has-image-laravel
 ```
 
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="has-image-laravel-migrations"
-php artisan migrate
-```
-
 You can publish the config file with:
 
 ```bash
 php artisan vendor:publish --tag="has-image-laravel-config"
 ```
 
-This is the contents of the published config file:
+The config file dictates the default storage disk to be used, while this can be overridden at a model
+level you may find it useful to configure to your default disk:
 
 ```php
 return [
+    'default' => 'local',
 ];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="has-image-laravel-views"
 ```
 
 ## Usage
 
 ```php
-$hasImageLaravel = new RPWebDevelopment\HasImageLaravel();
-echo $hasImageLaravel->echoPhrase('Hello, RPWebDevelopment!');
-```
 
-## Testing
+namespace App\Models;
 
-```bash
-composer test
+use Illuminate\Database\Eloquent\Model;
+use RPWebDevelopment\HasImageLaravel\Dto\ImageDetails;
+use RPWebDevelopment\HasImageLaravel\Traits\HasImage;
+
+class Foo extends Model
+{
+    use HasImage;
+    
+    protected $fillable = [
+        ...
+        'logo',
+        ...
+    ];
+
+    public function getImageDetails(): ImageDetails
+    {
+        /**
+        * $storageDisk parameter is optional, if excluded the 
+        * default disk from your configuration will be accepted.
+        *
+        * $maintainFilename parameter is optional (false by default)
+        * if true, the uploaded file will maintain the original filename
+        * as uploaded. If false a hashed filename will be used.
+        */
+        return ImageDetails::create(
+            imageDirectory: 'DIR_NAME',
+            imageFields: ['logo'],
+            storageDisk: 'public',
+            maintainFilename: true
+        );
+    }
+}
+
 ```
 
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
 ## Credits
 
 - [Richard Porter](https://github.com/rpwebdevelopment)
-- [All Contributors](../../contributors)
 
 ## License
 
